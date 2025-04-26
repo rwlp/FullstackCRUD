@@ -3,6 +3,7 @@
 
 - [Requisitos Backend](#requisitos-backend)
 - [Tecnologias](#tecnologias)
+- [Como rodar o front-end](#rodar-backend-localmente)
 
 ## Requisitos Backend
 
@@ -35,3 +36,24 @@
   - Escolhi o docker + docker-compose  para simular uma visão mais próxima do que seria um processo de deploy em produção.
   Mencionando tambem que isso facilita a execução do projeto localmente e permite uma configuração clara e reutilizável,
   ideal para replicação em diferentes ambientes.
+
+
+## Estrutura de Diretorios 
+
+```src/
+├── modules/           # Módulos da aplicação, organizados por domínio
+│   ├── moduleName/
+│   │   ├── moduleName.entity.ts        # Entidade que representa a tabela no banco de dados
+│   │   ├── moduleName.service.ts       # Lógica de negócio do módulo
+│   │   ├── moduleName.controller.ts    # Controlador que expõe as rotas HTTP
+│   │   ├── moduleName.repository.ts    # Camada de acesso ao banco de dados
+│   │   └── moduleName.module.ts        # Definição e injeção de dependências do módulo
+├── shared/            # Recursos compartilhados entre os módulos (middlewares, guards, pipes, interceptors, decorators)
+├── database/          # Configurações de conexão, entidades globais e migrations do banco de dados
+├── config/            # Configurações da aplicação (ex: variáveis de ambiente, settings globais)
+├── app.module.ts      # Módulo raiz que integra todos os módulos
+├── main.ts            # Ponto de entrada da aplicação NestJS
+```
+
+## Rodar Backend localmente 
+  - Com o utilitario docker-compose instalado: comando `docker-compose up` na raiz do projeto
