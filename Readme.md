@@ -120,7 +120,7 @@ Desenvolver uma aplicação fullstack com backend em NodeJS (NestJS) e frontend 
 ## Observações
 
 - **Tempo de execução**: 8h
-- **Dificuldades encontradas**: NestJs nao eh meu principal framework hoje, essa adaptacao teve impacto nas 2h a mais na entrega
+- **Dificuldades encontradas**: NestJs nao eh meu principal framework hoje, essa adaptacao teve impacto adicionando 2h a mais na entrega
 - **Decisões tomadas**: Ao longo do projeto, achei interessante usar react-query em vez de somente axios, e dar bastante foco ao ambiente docker
 - **Prioridades definidas**: Garantir CRUD funcional antes de focar em otimizações e estilizações
 - **Escopo original x Escopo entregue**: 100% do escopo funcional entregue. Porem com mais um dia (4h) conseguiriamos melhorar estilizacoes e otimizar o codigo em alguns casos(ver pendencias)
@@ -131,14 +131,16 @@ Desenvolver uma aplicação fullstack com backend em NodeJS (NestJS) e frontend 
 
 - Implementar validacao por meio de DTOs(processo ja iniciado)
 - Refinar e refatorar testes unitarios para a camada service do modulo product
-- Implementar design pattern data access object
+- Implementar design pattern data access object para dar flexibilidade de mudar o sistema de ORM se preciso. 
 - Implementar testes de integracao
 - Implementar a centralizacao de erros (processo ja iniciado mas nao finalizado)
 - Implementar pipe-line de CI/CD no github para rodar testes antes de aceitar merges ou PRs na main
+- usar variaveis de ambiente em vez de hardcode informacoes sensiveis(banco de dados, portas, etc)
 
 ### Frontend
 
-- Melhoria das funcoes de request(algumas estao diretamente definidas no componente/pagina)
+- Melhoria das funcoes de request para backend(algumas estao diretamente definidas no componente/pagina)
 - Mudanca de thema
 - de-boucing para busca por nome
-
+- Melhorar UX/UI (Alguns estilos de items na tela nao estao seguindo o mesmo padrao)
+- Separar codigo tsx de logica usando hooks customizados para cada componente/pagina
