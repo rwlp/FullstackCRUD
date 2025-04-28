@@ -14,7 +14,7 @@ export default function Card({ product }: CardProps) {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${apiRootUrl}/products/${product.id}`);
+      await axios.delete(`${apiRootUrl}/product/${product.id}`);
       
       setIsDeleted(true);
       

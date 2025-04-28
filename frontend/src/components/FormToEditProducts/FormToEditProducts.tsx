@@ -5,15 +5,13 @@ import { useState, useEffect } from 'react';
 import { Product } from '../../types/Product';
 import axios from 'axios';
 import { apiRootUrl } from '../../services/constants';
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { Category } from '../../types/Category';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductFormProps {
   initialValues?: Product;
-  onSubmit: (values: { categories: Category[]; name: string; qty: number; price: number; photo: string }) => void;
+  onSubmit: (values: Product, resetForm: () => void) => void;
+  
 }
 
 const validationSchema = Yup.object({
@@ -24,7 +22,8 @@ const validationSchema = Yup.object({
 });
 
 export default function FormToEditProducts({ initialValues, onSubmit }: ProductFormProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const navigate = useNavigate();
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
 
   const fetchCategories = async () => {
@@ -32,25 +31,25 @@ export default function FormToEditProducts({ initialValues, onSubmit }: ProductF
       const response = await axios.get(`${apiRootUrl}/category`);
       setAvailableCategories(response.data as Category[]);
     } catch (error) {
-      console.error('Erro ao carregar categorias', error);
+      alert('Erro ao carregar categorias, tente mais tarde!');
+      navigate("/");
     }
   };
 
   useEffect(() => {
     fetchCategories();
+    if (initialValues?.categories) {
+      setSelectedCategories(initialValues.categories);
+    }
   }, []);
 
-  useEffect(() => {
-    if (initialValues?.categories) {
-      setSelectedCategories(initialValues.categories.map(category => category.id));
-    }
-  }, [initialValues]);
-
-  const handleCategoryClick = (id: string) => {
-    if (selectedCategories.includes(id)) {
-      setSelectedCategories(selectedCategories.filter((categoryId) => categoryId !== id));
-    } else if (selectedCategories.length < 3) {
-      setSelectedCategories([...selectedCategories, id]);
+  const handleCategoryClick = (category: Category) => {
+    if (selectedCategories.some((cat) => cat.id === category.id)) {
+      setSelectedCategories(selectedCategories.filter((cat) => cat.id !== category.id));
+      return;
+    };
+    if (selectedCategories.length < 3) {
+      setSelectedCategories([...selectedCategories, category]);
     }
   };
 
@@ -61,10 +60,16 @@ export default function FormToEditProducts({ initialValues, onSubmit }: ProductF
         qty: 0,
         price: 0,
         photo: "",
-        categories: [],
+        categories: [] as Category[],
+        id: ''
       }}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values, {resetForm}) => {
+        values.categories = selectedCategories;
+        console.log(values.categories.map(cat => cat.name), `there is all categories`);
+        onSubmit(values, resetForm );
+      }
+      }
     >
       {() => (
         <Form className={styles.productForm}>
@@ -80,8 +85,8 @@ export default function FormToEditProducts({ initialValues, onSubmit }: ProductF
               {availableCategories.map((category) => (
                 <div
                   key={category.id}
-                  className={`${styles.chip} ${selectedCategories.includes(category.id) ? styles.selected : ''}`}
-                  onClick={() => handleCategoryClick(category.id)}
+                  className={`${styles.chip} ${selectedCategories.includes(category) ? styles.selected : ''}`}
+                  onClick={() => handleCategoryClick(category)}
                 >
                   {category.name}
                 </div>

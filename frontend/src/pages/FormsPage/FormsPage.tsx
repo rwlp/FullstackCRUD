@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { fetchProductById } from "../../services/fetchProductById";
 import { apiRootUrl } from "../../services/constants";
+import { Product } from "../../types/Product";
 
 export default function FormsPage() {
   const { id } = useParams<{ id: string }>();
@@ -15,14 +16,25 @@ export default function FormsPage() {
       queryFn: () => isEditing ? fetchProductById(id!) : undefined,
       enabled: isEditing,
     }
-    
   );
 
-  const handleSubmit = (values: any) => {
-    if (isEditing) {
-      axios.patch(`${apiRootUrl}/products/${id}`, values);
-    } else {
-      axios.post(`${apiRootUrl}/products`, values);
+  const handleSubmit = async (values: Product, resetForm: () => void) => {
+    const payload = {
+      ...values,
+      categories: values.categories.map((category) => ({id: category.id})),
+    };
+
+    try {
+      if (isEditing) {
+        await axios.patch(`${apiRootUrl}/product/${id}`, payload);
+        alert('Produto atualizado com sucesso!');
+      } else {
+        await axios.post(`${apiRootUrl}/product`, payload);
+        alert('Produto cadastrado com sucesso!');
+      }
+      resetForm();
+    } catch (error) {
+      alert('Erro ao salvar o produto.');
     }
   };
 

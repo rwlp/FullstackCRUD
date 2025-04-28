@@ -39,14 +39,15 @@ export class ProductService {
     return shuffled.slice(0, 3);
   }
 
-  async findByName(name: string, page: number, limit: number): Promise<{ data: ProductEntity[]; total: number }> {
+  async findByName(name: string = '', page: number, limit: number): Promise<{ products: ProductEntity[], totalItems: number, currentPage: number }> {
     const [data, total] = await this.productRepository.findAndCount({
-      where: { name: ILike(`%${name}%`) }, // Usando ILike para busca case-insensitive
-      take: limit, // Limita a quantidade de resultados
-      skip: (page - 1) * limit, // Pula os itens da página anterior
+      where: name ? { name: ILike(`%${name}%`) } : {},
+      relations: ['categories'],
+      take: limit,
+      skip: (page - 1) * limit, 
     });
 
-    return { data, total };
+    return { products: data, totalItems: total, currentPage: limit }
   }
 
 
@@ -58,12 +59,19 @@ export class ProductService {
   }
 
   async create(data: Partial<ProductEntity>): Promise<ProductEntity> {
-    const product = this.productRepository.create(data); // Cria uma instância da entidade com os dados
+    const product = this.productRepository.create({
+      categories: data.categories,
+      name: data.name,
+      photo: data.photo,
+      price: data.price,
+      qty: data.qty
+    });
+  
     return await this.productRepository.save(product); // Salva o produto no banco
   }
 
-  async update(id: string, data: Partial<ProductEntity>): Promise<void> {
-    const result = await this.productRepository.update(id, data); // Atualiza o produto com base no ID
+  async update(data: Partial<ProductEntity>): Promise<void> {
+    await this.productRepository.save(data); // Atualiza o produto com base no ID
   }
 
   async delete(id: string): Promise<void> {

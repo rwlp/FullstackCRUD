@@ -40,8 +40,8 @@ describe('ProductService', () => {
 
     const result = await service.findByName(name, page, limit);
 
-    expect(result.data).toEqual(products);
-    expect(result.total).toEqual(1);
+    expect(result.products).toEqual(products);
+    expect(result.totalItems).toEqual(1);
     expect(productRepository.findAndCount).toHaveBeenCalled();
   });
 
@@ -70,7 +70,7 @@ describe('ProductService', () => {
     const product = new ProductEntity();
     jest.spyOn(productRepository, 'update').mockResolvedValue({ affected: 1 } as any);
 
-    const result = await service.update('some-id', { name: 'novo nome' });
+    const result = await service.update();
 
     expect(productRepository.update).toHaveBeenCalledWith('some-id', { name: 'novo nome' });
   });

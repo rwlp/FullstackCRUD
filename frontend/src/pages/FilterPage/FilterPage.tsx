@@ -14,24 +14,25 @@ export default function FilterPage() {
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data, isLoading, isError } = useQuery(
+  const { data, isLoading, isError, error } = useQuery(
     {
       queryKey: ['products', currentPage, itemsPerPage, searchTerm],
       queryFn: () => fetchProducts(currentPage, itemsPerPage, searchTerm),
     }
   );
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  const handleSearchChange = (e: string) => {
+    setSearchTerm(e);
     setCurrentPage(1);
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Carregando...</div>;
   }
 
   if (isError) {
-    return <div>Error fetching data</div>;
+    console.log(error);
+    return <div>Servico Indisponivel. Tente mais tarde!</div>;
   }
 
   return (
