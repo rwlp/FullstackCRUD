@@ -38,4 +38,15 @@ export class ProductService {
     const shuffled = categories.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 3);
   }
+
+  findByName: (name: string, page: number, limit: number) => Promise<{ data: ProductEntity[]; total: number }>;
+
+  findOne: (id: string) => Promise<ProductEntity | null>;
+
+  create: (data: Partial<ProductEntity>) => Promise<ProductEntity>;
+
+  update: (id: string, data: Partial<ProductEntity>) => Promise<{ affected: number }>;
+
+  delete: (id: string) => Promise<{ affected: number }>;
+
 }
