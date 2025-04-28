@@ -5,38 +5,40 @@ import { Paginator } from "../../components/Paginator/Paginator";
 import SearchInput from "../../components/searchInput/SearchInput";
 import { Product } from "../../types/Product";
 import styles from './style.module.scss'
+import fetchProducts from "../../services/fetchProducts";
+import { useQuery } from "@tanstack/react-query";
 
-const fakeProd: Product = {
-  name: 'Some Name',
-  categories: [{
-    id: 'someid',
-    parent: null,
-    name: 'eletronics'
-  }, {
-    id: 'someid',
-    parent: null,
-    name: 'eletronics'
-  },
-  {
-    id: 'someid',
-    parent: null,
-    name: 'eletronics'
-  }],
-  id: 'idifa',
-  photo: 'https://picsum.photos/200/200',
-  price: 18.832,
-  qty: 3,
-}
 
 export default function FilterPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const { data, isLoading, isError } = useQuery(
+    {
+      queryKey: ['products', currentPage, itemsPerPage, searchTerm],
+      queryFn: () => fetchProducts(currentPage, itemsPerPage, searchTerm),
+    }
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error fetching data</div>;
+  }
 
   return (
     <main>
       <div className={styles.actionsContainer}>
         <div className={styles.searchArea}>
-          <SearchInput />
+          <SearchInput onSearch={handleSearchChange} />
           <div className={styles.itemsPerPage}>
             <label htmlFor="itemsSelect">Items por página:</label>
             <select
@@ -57,20 +59,21 @@ export default function FilterPage() {
       </div>
 
       <GridContainer>
-        <Card product={fakeProd} />
-        <Card product={fakeProd} />
-        <Card product={fakeProd} />
-        <Card product={fakeProd} />
-        <Card product={fakeProd} />
-        <Card product={fakeProd} />
-
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : isError ? (
+          <div>Erro ao carregar dados!</div>
+        ) : (
+          data?.products.map((product: Product) => <Card key={product.id} product={product} />)
+        )}
       </GridContainer>
+
       <Paginator
-        totalItems={50}
+        totalItems={data?.totalItems || 0}  // Assumindo que a API retorna o total de items
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
-        onPageChange={setCurrentPage} />
-
+        onPageChange={setCurrentPage}
+      />
     </main>
-  )
+  );
 }
