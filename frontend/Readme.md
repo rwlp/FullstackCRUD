@@ -1,7 +1,8 @@
 # Sumário
 
+- [Como rodar o front-end](#rodar-frontend-localmente)
 - [Requisitos Frontend](#requisitos-frontend)
-
+- [Diretorios](#estrutura-de-diretorios)
 
 ## Requisitos Frontend
 
@@ -35,3 +36,17 @@
 
 
 
+## Estrutura de Diretorios
+```
+src/
+├── services/         # Funções responsáveis por requisições a APIs externas
+├── pages/            # Páginas da aplicação, estruturadas para uso com react-router-dom
+├── config/           # Configuracao de frameworks e/ou libs de terceiros utilizados globalmente
+├── components/       # Componentes reutilizáveis da interface (React)
+├── types/            # Tipos e interfaces globais utilizados no front-end
+```
+
+## Rodar Frontend localmente
+
+- Com o utilitario docker-compose instalado:
+ - comando `docker-compose up` na raiz do projeto

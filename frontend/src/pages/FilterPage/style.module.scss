@@ -1,0 +1,41 @@
+.actionsContainer {
+  min-width: 100%;
+}
+
+.itemsSelect {
+  padding: 0.4rem;
+}
+
+.actionsContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.searchArea {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.itemsPerPage {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #ccc;
+
+  select {
+    margin-top: 0.25rem;
+    padding: 0.4rem 0.6rem;
+    background-color: #222;
+    color: #eee;
+    border: 1px solid #555;
+    border-radius: 6px;
+  }
+
+  label {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+  }
+}
