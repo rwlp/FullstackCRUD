@@ -46,14 +46,12 @@
 │   │   ├── moduleName.entity.ts        # Entidade que representa a tabela no banco de dados
 │   │   ├── moduleName.service.ts       # Lógica de negócio do módulo
 │   │   ├── moduleName.controller.ts    # Controlador que expõe as rotas HTTP
-│   │   ├── moduleName.repository.ts    # Camada de acesso ao banco de dados
 │   │   └── moduleName.module.ts        # Definição e injeção de dependências do módulo
 ├── shared/            # Recursos compartilhados entre os módulos (middlewares, guards, pipes, interceptors, decorators)
-├── database/          # Configurações de conexão, entidades globais e migrations do banco de dados
-├── config/            # Configurações da aplicação (ex: variáveis de ambiente, settings globais)
+├── config/            # Configurações da aplicação (ex: variáveis de ambiente, settings globais, banco de dados, etc.)
 ├── app.module.ts      # Módulo raiz que integra todos os módulos
 ├── main.ts            # Ponto de entrada da aplicação NestJS
 ```
 
 ## Rodar Backend localmente 
-  - Com o utilitario docker-compose instalado: comando `docker-compose up` na raiz do projeto
+  - Com o utilitario docker-compose instalado: comando `docker-compose up --build` na raiz do projeto

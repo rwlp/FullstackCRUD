@@ -11,6 +11,14 @@ services:
       DATABASE_URL: postgres://user:password@db:5432/database
     depends_on:
       - db
+    command: >
+      sh -c "
+        until pg_isready -h db -p 5432 -U user; do
+          echo 'Waiting for database...';
+          sleep 20;
+        done;
+        node dist/main
+      "
     deploy:
       resources:
         limits:
@@ -29,6 +37,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: database
     volumes:
+      - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"

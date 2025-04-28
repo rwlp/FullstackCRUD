@@ -10,7 +10,11 @@ COPY . .
 
 RUN npm run build
 
+#Usamos uma imagem mais leve para ambiente de producao
 FROM node:20-alpine
+
+# Isso garante espera do banco de dados pronto antes de continuar
+RUN apk update && apk add postgresql-client
 
 WORKDIR /app
 
