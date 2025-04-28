@@ -10,10 +10,16 @@ $category-border: #555;
 .container {
   position: relative;
 
+  &.deleted {
+    opacity: 0.5;
+    pointer-events: none;
+    background-color: #f0f0f0;
+  }
+
   .card {
     position: relative;
     width: 250px;
-    height: 380px;
+    height: 460px;
     background: $card-bg;
     border-radius: 20px;
     overflow: hidden;

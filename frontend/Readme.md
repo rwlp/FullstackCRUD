@@ -31,10 +31,8 @@
 ### SASS
   - Preferencialmente, eu utilizaria Tailwind, mas o projeto é muito simplório para aprofundamentos nesse sentido. Dentre as opções, escolhi o SASS (SCSS) por me sentir mais confiante com a ferramenta.
 
-### Axios
-  - Para requests do frontend para o backend usamos o `axios`, devido a simplicidade de sintaxe, melhor tratamento de erros em comparacao com o `fetch` e facilidade de configuracao de headers agilizando a integração com APIs RESTful.
-
-
+### React Query
+  - Para requests do frontend para o backend usamos ReactQuery devido a facilidade e rapidez no gerenciamento da requisicao e estados de erro.
 
 ## Estrutura de Diretorios
 ```

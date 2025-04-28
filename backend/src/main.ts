@@ -2,13 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './config/exceptions/http-exception.filter';
-import { CategoryEntity } from './modules/categories/category.entity';
-import { ProductService } from './modules/products/product.service';
-import { CategoryService } from './modules/categories/category.service';
 
 async function bootstrap() {
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: true
+  });
   await app.init();
 
   
@@ -19,8 +18,6 @@ async function bootstrap() {
   }))
 
   app.useGlobalFilters(new HttpExceptionFilter())
-
-  app.enableCors();
 
   await app.listen(process.env.PORT ?? 3000);
 }

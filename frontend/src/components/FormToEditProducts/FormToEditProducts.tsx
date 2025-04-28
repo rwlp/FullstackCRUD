@@ -1,22 +1,17 @@
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import styles from './styles.module.scss';
-import { useState } from 'react';
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { useState, useEffect } from 'react';
+import { Product } from '../../types/Product';
+import axios from 'axios';
+import { apiRootUrl } from '../../services/constants';
+import { Category } from '../../types/Category';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductFormProps {
-  initialValues?: {
-    categories: Category[];
-    name: string;
-    qty: number;
-    price: number;
-    photo: string;
-  };
-  onSubmit: (values: { categories: Category[]; name: string; qty: number; price: number; photo: string }) => void;
+  initialValues?: Product;
+  onSubmit: (values: Product, resetForm: () => void) => void;
+  
 }
 
 const validationSchema = Yup.object({
@@ -26,28 +21,55 @@ const validationSchema = Yup.object({
   photo: Yup.string().url('URL inválida').required('Foto do produto é obrigatória'),
 });
 
-export default function FormToEditProducts({ initialValues = {
-  name: "",
-  qty: 0,
-  price: 0,
-  photo: "",
-  categories: [{id: 'id', name: 'someother'}, {id: 'noID', name: 'eletronic'}, {id: 'ad', name: 'fashin'}, {id: 'fd', name: 'none'}, ]
-}, onSubmit }: ProductFormProps) {
+export default function FormToEditProducts({ initialValues, onSubmit }: ProductFormProps) {
+  const navigate = useNavigate();
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
-  const handleCategoryClick = (id: string) => {
-    if (selectedCategories.includes(id)) {
-      setSelectedCategories(selectedCategories.filter((categoryId) => categoryId !== id));
-    } else if (selectedCategories.length < 3) {
-      setSelectedCategories([...selectedCategories, id]);
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${apiRootUrl}/category`);
+      setAvailableCategories(response.data as Category[]);
+    } catch (error) {
+      alert('Erro ao carregar categorias, tente mais tarde!');
+      navigate("/");
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+    if (initialValues?.categories) {
+      setSelectedCategories(initialValues.categories);
+    }
+  }, []);
+
+  const handleCategoryClick = (category: Category) => {
+    if (selectedCategories.some((cat) => cat.id === category.id)) {
+      setSelectedCategories(selectedCategories.filter((cat) => cat.id !== category.id));
+      return;
+    };
+    if (selectedCategories.length < 3) {
+      setSelectedCategories([...selectedCategories, category]);
+    }
+  };
+
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={initialValues || {
+        name: "",
+        qty: 0,
+        price: 0,
+        photo: "",
+        categories: [] as Category[],
+        id: ''
+      }}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values, {resetForm}) => {
+        values.categories = selectedCategories;
+        console.log(values.categories.map(cat => cat.name), `there is all categories`);
+        onSubmit(values, resetForm );
+      }
+      }
     >
       {() => (
         <Form className={styles.productForm}>
@@ -58,19 +80,19 @@ export default function FormToEditProducts({ initialValues = {
           </div>
 
           <div className={styles.formGroup}>
-          <label htmlFor="categories">Categorias (máximo de 3)</label>
-  <div className={styles.chipContainer}>
-    {initialValues!.categories.map((category) => (
-      <div
-        key={category.id}
-        className={`${styles.chip} ${selectedCategories.includes(category.id) ? styles.selected : ''}`}
-        onClick={() => handleCategoryClick(category.id)}
-      >
-        {category.name}
-      </div>
-    ))}
-  </div>
-  <ErrorMessage name="categories" component="div" className={styles.error} />
+            <label htmlFor="categories">Categorias (máximo de 3)</label>
+            <div className={styles.chipContainer}>
+              {availableCategories.map((category) => (
+                <div
+                  key={category.id}
+                  className={`${styles.chip} ${selectedCategories.includes(category) ? styles.selected : ''}`}
+                  onClick={() => handleCategoryClick(category)}
+                >
+                  {category.name}
+                </div>
+              ))}
+            </div>
+            <ErrorMessage name="categories" component="div" className={styles.error} />
           </div>
 
           <div className={styles.formGroup}>
