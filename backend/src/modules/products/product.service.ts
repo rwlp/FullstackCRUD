@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { ProductEntity } from './product.entity';
 import { CategoryEntity } from '../categories/category.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -11,7 +11,7 @@ export class ProductService {
     private productRepository: Repository<ProductEntity>,
     @InjectRepository(CategoryEntity)
     private categoryRepository: Repository<CategoryEntity>,
-  ) {}
+  ) { }
 
   // Usado para seed no banco de dados. Gera 100 produtos aleatorios
   async seed() {
@@ -39,14 +39,34 @@ export class ProductService {
     return shuffled.slice(0, 3);
   }
 
-  findByName: (name: string, page: number, limit: number) => Promise<{ data: ProductEntity[]; total: number }>;
+  async findByName(name: string, page: number, limit: number): Promise<{ data: ProductEntity[]; total: number }> {
+    const [data, total] = await this.productRepository.findAndCount({
+      where: { name: ILike(`%${name}%`) }, // Usando ILike para busca case-insensitive
+      take: limit, // Limita a quantidade de resultados
+      skip: (page - 1) * limit, // Pula os itens da página anterior
+    });
 
-  findOne: (id: string) => Promise<ProductEntity | null>;
+    return { data, total };
+  }
 
-  create: (data: Partial<ProductEntity>) => Promise<ProductEntity>;
 
-  update: (id: string, data: Partial<ProductEntity>) => Promise<{ affected: number }>;
+  async findOne(id: string): Promise<ProductEntity | null> {
+    return await this.productRepository.findOne({
+      where: { id },
+      relations: ['categories'], // Se quiser retornar também as categorias relacionadas
+    });
+  }
 
-  delete: (id: string) => Promise<{ affected: number }>;
+  async create(data: Partial<ProductEntity>): Promise<ProductEntity> {
+    const product = this.productRepository.create(data); // Cria uma instância da entidade com os dados
+    return await this.productRepository.save(product); // Salva o produto no banco
+  }
 
+  async update(id: string, data: Partial<ProductEntity>): Promise<void> {
+    const result = await this.productRepository.update(id, data); // Atualiza o produto com base no ID
+  }
+
+  async delete(id: string): Promise<void> {
+    const result = await this.productRepository.delete(id); // Exclui o produto com o ID
+  }
 }

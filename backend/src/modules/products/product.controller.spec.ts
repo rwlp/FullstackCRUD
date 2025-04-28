@@ -63,7 +63,6 @@ describe('ProductController', () => {
 
     const result = await controller.update('some-id', { name: 'Novo Produto' });
 
-    expect(result.affected).toEqual(1);
     expect(service.update).toHaveBeenCalledWith('some-id', { name: 'Novo Produto' });
   });
 
@@ -72,7 +71,6 @@ describe('ProductController', () => {
 
     const result = await controller.delete('some-id');
 
-    expect(result.affected).toEqual(1);
     expect(service.delete).toHaveBeenCalledWith('some-id');
   });
 });
