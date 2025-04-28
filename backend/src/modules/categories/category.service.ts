@@ -10,7 +10,9 @@ export class CategoryService {
     private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
 
-  findAll: () => Promise<void>;
+  async findAll(): Promise<CategoryEntity[]> {
+    return await this.categoryRepository.find()
+  }
 
   // Script usado para seed no banco de dados.
   async seed() {
