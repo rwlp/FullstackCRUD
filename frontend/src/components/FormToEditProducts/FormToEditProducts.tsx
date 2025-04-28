@@ -1,7 +1,10 @@
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import styles from './styles.module.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Product } from '../../types/Product';
+import axios from 'axios';
+import { apiRootUrl } from '../../services/constants';
 
 interface Category {
   id: string;
@@ -9,13 +12,7 @@ interface Category {
 }
 
 interface ProductFormProps {
-  initialValues?: {
-    categories: Category[];
-    name: string;
-    qty: number;
-    price: number;
-    photo: string;
-  };
+  initialValues?: Product;
   onSubmit: (values: { categories: Category[]; name: string; qty: number; price: number; photo: string }) => void;
 }
 
@@ -26,15 +23,28 @@ const validationSchema = Yup.object({
   photo: Yup.string().url('URL inválida').required('Foto do produto é obrigatória'),
 });
 
-export default function FormToEditProducts({ initialValues = {
-  name: "",
-  qty: 0,
-  price: 0,
-  photo: "",
-  categories: [{id: 'id', name: 'someother'}, {id: 'noID', name: 'eletronic'}, {id: 'ad', name: 'fashin'}, {id: 'fd', name: 'none'}, ]
-}, onSubmit }: ProductFormProps) {
-
+export default function FormToEditProducts({ initialValues, onSubmit }: ProductFormProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${apiRootUrl}/category`);
+      setAvailableCategories(response.data as Category[]);
+    } catch (error) {
+      console.error('Erro ao carregar categorias', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (initialValues?.categories) {
+      setSelectedCategories(initialValues.categories.map(category => category.id));
+    }
+  }, [initialValues]);
 
   const handleCategoryClick = (id: string) => {
     if (selectedCategories.includes(id)) {
@@ -43,9 +53,16 @@ export default function FormToEditProducts({ initialValues = {
       setSelectedCategories([...selectedCategories, id]);
     }
   };
+
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={initialValues || {
+        name: "",
+        qty: 0,
+        price: 0,
+        photo: "",
+        categories: [],
+      }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
@@ -58,19 +75,19 @@ export default function FormToEditProducts({ initialValues = {
           </div>
 
           <div className={styles.formGroup}>
-          <label htmlFor="categories">Categorias (máximo de 3)</label>
-  <div className={styles.chipContainer}>
-    {initialValues!.categories.map((category) => (
-      <div
-        key={category.id}
-        className={`${styles.chip} ${selectedCategories.includes(category.id) ? styles.selected : ''}`}
-        onClick={() => handleCategoryClick(category.id)}
-      >
-        {category.name}
-      </div>
-    ))}
-  </div>
-  <ErrorMessage name="categories" component="div" className={styles.error} />
+            <label htmlFor="categories">Categorias (máximo de 3)</label>
+            <div className={styles.chipContainer}>
+              {availableCategories.map((category) => (
+                <div
+                  key={category.id}
+                  className={`${styles.chip} ${selectedCategories.includes(category.id) ? styles.selected : ''}`}
+                  onClick={() => handleCategoryClick(category.id)}
+                >
+                  {category.name}
+                </div>
+              ))}
+            </div>
+            <ErrorMessage name="categories" component="div" className={styles.error} />
           </div>
 
           <div className={styles.formGroup}>
