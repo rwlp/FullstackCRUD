@@ -85,7 +85,7 @@ export default function FormToEditProducts({ initialValues, onSubmit }: ProductF
               {availableCategories.map((category) => (
                 <div
                   key={category.id}
-                  className={`${styles.chip} ${selectedCategories.includes(category) ? styles.selected : ''}`}
+                  className={`${styles.chip} ${selectedCategories.find(cat => cat.id === category.id) ? styles.selected : ''}`}
                   onClick={() => handleCategoryClick(category)}
                 >
                   {category.name}
